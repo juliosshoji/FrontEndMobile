@@ -16,7 +16,7 @@ class Customer {
     required this.email,
     required this.phone,
     required this.password,
-    required this.birthDate, // Adicionado
+    required this.birthDate,
   });
 
   factory Customer.fromJson(Map<String, dynamic> json) {
@@ -26,7 +26,7 @@ class Customer {
       email: json['email'],
       phone: json['phone'],
       password: json['password'],
-      birthDate: json['birthDate'], // Adicionado
+      birthDate: json['birthday'],
     );
   }
 
@@ -37,7 +37,7 @@ class Customer {
       'email': email,
       'phone': phone,
       'password': password,
-      'birthDate': birthDate, // Adicionado
+      'birthday': birthDate, 
     };
   }
 
