@@ -22,16 +22,13 @@ class _LoginScreenState extends State<LoginScreen> {
       });
 
       try {
-        // Chama o método de login do AuthService
         await context.read<AuthService>().login(
               _documentController.text,
               _passwordController.text,
             );
 
-        // Se o login for bem-sucedido, remove a tela de login da pilha e volta para a tela inicial
         Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
       } catch (e) {
-        // Se ocorrer um erro, exibe uma SnackBar
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(e.toString().replaceFirst('Exception: ', '')),
