@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:helloworld/controller/api_constants.dart';
 import 'package:helloworld/controller/auth_service.dart';
 import 'package:helloworld/controller/professionals_controller.dart';
 import 'package:helloworld/controller/reviews_controller.dart';
@@ -29,20 +30,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        // 1. Fornece a camada de API primeiro (não tem dependências)
         Provider<RestProvider>(
           create: (_) => RestProvider(),
         ),
 
-        // 2. Fornece o ServicesController (não tem dependências)
         Provider<ServicesController>(
           create: (_) => ServicesController(),
         ),
 
-        // 3. Usa ProxyProviders para construir os serviços
-        //    que DEPENDEM do RestProvider.
-        ProxyProvider<RestProvider, AuthService>(
-          update: (context, api, previous) => AuthService(api: api),
+        ChangeNotifierProxyProvider<RestProvider, AuthService>(
+          update: (context, api, previous) => AuthService(api: api), create: (context) => AuthService(api: context.read<RestProvider>())
         ),
         ProxyProvider<RestProvider, ProfessionalsController>(
           update: (context, api, previous) =>
@@ -60,8 +57,8 @@ class MyApp extends StatelessWidget {
           visualDensity: VisualDensity.adaptivePlatformDensity,
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white, // Corrigido de 'primary'
-              foregroundColor: Colors.deepPurple, // Corrigido de 'onPrimary'
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.deepPurple,
             ),
           ),
         ),
