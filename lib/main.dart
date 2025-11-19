@@ -38,9 +38,14 @@ class MyApp extends StatelessWidget {
           create: (_) => ServicesController(),
         ),
 
-        ChangeNotifierProxyProvider<RestProvider, AuthService>(
-          update: (context, api, previous) => AuthService(api: api), create: (context) => AuthService(api: context.read<RestProvider>())
+        // 3. Usa ProxyProviders para construir os serviços
+        //    que DEPENDEM do RestProvider.
+        // CORREÇÃO: AuthService é um ChangeNotifier e deve usar ChangeNotifierProxyProvider.
+        ChangeNotifierProxyProvider<RestProvider, AuthService>( 
+          create: (context) => AuthService(api: context.read<RestProvider>()),
+          update: (context, api, previous) => previous ?? AuthService(api: api),
         ),
+        
         ProxyProvider<RestProvider, ProfessionalsController>(
           update: (context, api, previous) =>
               ProfessionalsController(api: api),

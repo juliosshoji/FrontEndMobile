@@ -34,9 +34,6 @@ class ProfessionalsController {
   }
 
   Future<List<Professional>> fetchFavorites() async {
-    // A lógica de favoritos (buscar IDs do cliente e depois
-    // buscar cada 'Professional' individualmente) ainda
-    // precisa ser implementada aqui.
-    return [];
+    return await _api.getFavorites();
   }
 }

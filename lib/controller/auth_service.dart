@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:helloworld/model/customer_model.dart';
 import 'package:helloworld/provider/rest_provider.dart';
+import 'package:crypto/crypto.dart'; // Import crypto
+import 'dart:convert'; // Import convert para utf8
 
 class AuthService extends ChangeNotifier {
   final RestProvider _api;
@@ -12,23 +14,26 @@ class AuthService extends ChangeNotifier {
   Customer? get currentUser => _currentUser;
   bool get isLoggedIn => _isLoggedIn;
 
+  // Helper para Hash SHA256
+  String _hashPassword(String password) {
+    return sha256.convert(utf8.encode(password)).toString();
+  }
+
   Future<void> login(String document, String password) async {
     try {
-      // 1. Busca o cliente no backend usando o documento
+      final passwordHash = _hashPassword(password);
+
+      await _api.login(document, passwordHash);
+
+     
       final customer = await _api.getCustomer(document);
 
-      // 2. Compara a senha fornecida com a senha retornada pela API
-      if (customer.password == password) {
-        // 3. Se as senhas correspondem, atualiza o estado de login
-        _currentUser = customer;
-        _isLoggedIn = true;
-        notifyListeners(); // Notifica os widgets que estão ouvindo
-      } else {
-        // Lança um erro se a senha estiver incorreta
-        throw Exception('Senha incorreta.');
-      }
+      _api.currentCustomer = customer;
+      _currentUser = customer;
+      _isLoggedIn = true;
+      notifyListeners();
     } catch (e) {
-      // Repassa o erro para a UI tratar (ex: usuário não encontrado, senha inválida.)
+      print(e);
       throw Exception('Usuário não encontrado ou senha inválida.');
     }
   }
@@ -36,6 +41,7 @@ class AuthService extends ChangeNotifier {
   void logout() {
     _currentUser = null;
     _isLoggedIn = false;
+    // Nota: Idealmente você também limparia o token no RestProvider
     notifyListeners();
   }
 }

@@ -11,11 +11,9 @@ class InitialScreen extends StatefulWidget {
 }
 
 class _InitialScreenState extends State<InitialScreen> {
-  // REMOVIDO: final AuthService _authService = AuthService();
   int _selectedIndex = 0;
 
   Widget _buildProfileIcon(BuildContext context, AuthService authService) {
-    // Esta função agora recebe o AuthService
     if (authService.isLoggedIn) {
       return GestureDetector(
         onTap: () {
@@ -40,7 +38,6 @@ class _InitialScreenState extends State<InitialScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // CORREÇÃO: "Ouve" o AuthService para mudanças de estado (login/logout)
     final authService = context.watch<AuthService>();
 
     return Scaffold(
@@ -51,7 +48,6 @@ class _InitialScreenState extends State<InitialScreen> {
         ],
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
-          // Passa o serviço para o helper
           child: _buildProfileIcon(context, authService),
         ),
       ),

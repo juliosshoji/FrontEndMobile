@@ -30,40 +30,6 @@ class ProviderDetailsScreen extends StatelessWidget {
     }
   }
 
-  // NOVO: Função para lançar o aplicativo de contato (Telefone ou E-mail)
-  void _launchContact(BuildContext context) async {
-    final String contactAddress = professional.contactAddress;
-    final String contactType = professional.contactType;
-    
-    String url;
-    Uri uri;
-
-    if (contactType.toUpperCase() == 'PHONE') {
-      // Abre o discador para telefone (ou WhatsApp, dependendo do sistema)
-      url = 'tel:$contactAddress';
-    } else if (contactType.toUpperCase() == 'EMAIL') {
-      // Abre o cliente de e-mail
-      url = 'mailto:$contactAddress';
-    } else {
-      // Fallback
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Tipo de contato desconhecido.')),
-      );
-      return;
-    }
-    
-    uri = Uri.parse(url);
-
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Não foi possível abrir o contato: $contactAddress (Tipo: $contactType)')),
-      );
-    }
-  }
-
-
   @override
   Widget build(BuildContext context) {
     // Opcional: Usar context.watch para reconstruir o ícone de favorito ao logar/deslogar
@@ -120,8 +86,11 @@ class ProviderDetailsScreen extends StatelessWidget {
               label: const Text('Contatar'),
               onPressed: () {
                 _handleAction(context, () {
-                  // Lógica para CONTATAR o profissional (CHAMADA REAL)
-                  _launchContact(context); // <-- CHAMADA REAL
+                  // Lógica para CONTATAR o profissional (ex: abrir WhatsApp)
+                  print('Ação: Contatar profissional');
+                   ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Iniciando contato... (simulação)')),
+                  );
                 });
               },
               style: ElevatedButton.styleFrom(
