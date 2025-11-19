@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:helloworld/controller/auth_service.dart';
 import 'package:helloworld/model/customer_model.dart';
 import 'package:helloworld/provider/rest_provider.dart';
+import 'package:crypto/crypto.dart';
+import 'dart:convert';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({Key? key}) : super(key: key);
@@ -54,17 +55,18 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     if (_formKey.currentState?.validate() ?? false) {
       setState(() => _isLoading = true);
 
+      final passwordHash = sha256.convert(utf8.encode(_passwordController.text)).toString();
+
       final customer = Customer(
         name: _nameController.text,
         document: _documentController.text,
-        birthDate: _birthDateController.text, // Adicionado
+        birthDate: _birthDateController.text,
         email: _emailController.text,
         phone: _phoneController.text,
-        password: _passwordController.text,
+        password: passwordHash, 
       );
 
       try {
-        // Usando o RestProvider diretamente para registrar
         await context.read<RestProvider>().registerCustomer(customer);
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -73,7 +75,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             backgroundColor: Colors.green,
           ),
         );
-        Navigator.of(context).pop(); // Volta para a tela de login
+        Navigator.of(context).pop(); 
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
