@@ -4,6 +4,7 @@ import 'package:helloworld/controller/auth_service.dart';
 import 'package:helloworld/controller/professionals_controller.dart';
 import 'package:helloworld/model/professional_model.dart';
 import 'package:helloworld/view/evaluation_screen.dart';
+import 'package:url_launcher/url_launcher.dart'; // <-- NOVO IMPORT
 
 class ProviderDetailsScreen extends StatelessWidget {
   final Professional professional;
@@ -28,6 +29,37 @@ class ProviderDetailsScreen extends StatelessWidget {
       // Navigator.pushNamed(context, '/login');
     }
   }
+
+  // NOVO: Função para lançar o aplicativo de contato (Telefone ou WhatsApp)
+  void _launchContact(BuildContext context) async {
+    final String contactAddress = professional.contactAddress;
+    final String contactType = professional.contactType;
+    
+    String url;
+    Uri uri;
+
+    if (contactType.toUpperCase() == 'PHONE') {
+      // Abre o discador para telefone
+      url = 'tel:$contactAddress';
+    } else if (contactType.toUpperCase() == 'EMAIL') {
+      // Abre o cliente de e-mail
+      url = 'mailto:$contactAddress';
+    } else {
+      // Fallback: Tenta abrir como WhatsApp (pode ser o caso do 'PHONE' ser um número de WhatsApp)
+      url = 'https://wa.me/$contactAddress';
+    }
+    
+    uri = Uri.parse(url);
+
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Não foi possível abrir o contato: $contactAddress (Tipo: $contactType)')),
+      );
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -85,11 +117,8 @@ class ProviderDetailsScreen extends StatelessWidget {
               label: const Text('Contatar'),
               onPressed: () {
                 _handleAction(context, () {
-                  // Lógica para CONTATAR o profissional (ex: abrir WhatsApp)
-                  print('Ação: Contatar profissional');
-                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Iniciando contato... (simulação)')),
-                  );
+                  // Lógica para CONTATAR o profissional (chamar função _launchContact)
+                  _launchContact(context); // <-- CHAMADA ATUALIZADA
                 });
               },
               style: ElevatedButton.styleFrom(
