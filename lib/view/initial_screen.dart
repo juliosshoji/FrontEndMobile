@@ -12,6 +12,77 @@ class InitialScreen extends StatefulWidget {
 
 class _InitialScreenState extends State<InitialScreen> {
   int _selectedIndex = 0;
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  String? _findCategoryFromSearch(String searchText) {
+    if (searchText.trim().isEmpty) return null;
+    
+    final searchLower = searchText.toLowerCase().trim();
+    final categories = {
+      'jardineiro': 'Jardineiro',
+      'jardim': 'Jardineiro',
+      'jardinagem': 'Jardineiro',
+      'marido de aluguel': 'Marido de Aluguel',
+      'marido': 'Marido de Aluguel',
+      'aluguel': 'Marido de Aluguel',
+      'eletricista': 'Eletricista',
+      'eletrica': 'Eletricista',
+      'elétrica': 'Eletricista',
+      'eletricidade': 'Eletricista',
+      'encanador': 'Encanador',
+      'encanamento': 'Encanador',
+      'encanação': 'Encanador',
+      'canos': 'Encanador',
+      'diarista': 'Diarista',
+      'faxina': 'Diarista',
+      'limpeza': 'Diarista',
+      'pintor': 'Pintor',
+      'pintura': 'Pintor',
+      'outro': 'Outro',
+      'outros': 'Outro',
+      'todos': 'Todos',
+      'ver todos': 'Todos',
+    };
+
+    if (categories.containsKey(searchLower)) {
+      return categories[searchLower];
+    }
+
+    for (var entry in categories.entries) {
+      if (entry.key.contains(searchLower) || searchLower.contains(entry.key)) {
+        return entry.value;
+      }
+    }
+
+    return null;
+  }
+
+  void _performSearch() {
+    final category = _findCategoryFromSearch(_searchController.text);
+    if (category != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ServicesSessionScreen(category: category),
+        ),
+      );
+      _searchController.clear();
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ServicesSessionScreen(category: 'Todos'),
+        ),
+      );
+      _searchController.clear();
+    }
+  }
 
   Widget _buildProfileIcon(BuildContext context, AuthService authService) {
     if (authService.isLoggedIn) {
@@ -55,16 +126,34 @@ class _InitialScreenState extends State<InitialScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            const TextField(
+            TextField(
+              controller: _searchController,
               decoration: InputDecoration(
                 hintText: 'Busque o serviço que precisa',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          setState(() {
+                            _searchController.clear();
+                          });
+                        },
+                      )
+                    : null,
+                border: const OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(25.0)),
                 ),
                 filled: true,
                 fillColor: Colors.white,
               ),
+              onChanged: (value) {
+                setState(() {});
+              },
+              onSubmitted: (value) {
+                _performSearch();
+              },
+              textInputAction: TextInputAction.search,
             ),
             const SizedBox(height: 20),
             Expanded(
@@ -98,22 +187,34 @@ class _InitialScreenState extends State<InitialScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) {
-           if (index == 0) {
+          final authService = context.read<AuthService>();
+
+          if (index == 0) {
             setState(() {
               _selectedIndex = 0;
             });
             return;
           }
 
+          if ((index == 1 || index == 2) && !authService.isLoggedIn) {
+             ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Você precisa fazer login para acessar esta área.'),
+                backgroundColor: Colors.orange,
+                duration: Duration(seconds: 2),
+              ),
+            );
+            Navigator.pushNamed(context, '/login');
+            return;
+          }
+
           String? routeName;
-          if (index == 0) {
-            // Já estamos aqui
-          } else if (index == 1) {
+          if (index == 1) {
             routeName = '/favorites';
           } else if (index == 2) {
             routeName = '/my_services';
           }
-          // Atualiza o estado visual, exceto se já estiver na página 'home'
+
           if (routeName != null) {
             Navigator.pushNamed(context, routeName).then((_) {
               setState(() {

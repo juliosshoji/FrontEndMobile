@@ -27,6 +27,17 @@ class RestProvider {
   set currentCustomer(Customer customer) {
     _currentCustomer = customer;
   }
+
+  Future<Map<String, dynamic>> getProviderBasicInfo(String document) async {
+    final uri = Uri.parse("${ApiConstants.providers}/$document");
+    final response = await _client.get(uri, headers: _headers);
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      return {'name': 'Profissional não encontrado', 'document': document};
+    }
+  }
   
   Future<void> login(String document, String passwordHash) async {
     final uri = Uri.parse("${ApiConstants.BASE_URL}/login"); 

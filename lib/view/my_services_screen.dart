@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import "package:intl/intl.dart"; // Adicione a dep 'intl' ao seu pubspec.yaml
-import 'package:helloworld/controller/services_controller.dart';
-import 'package:helloworld/model/service_record_model.dart';
-
+import 'package:provider/provider.dart';
+import "package:intl/intl.dart";
+import 'package:helloworld/controller/auth_service.dart';
+import 'package:helloworld/model/customer_model.dart';
+import 'package:helloworld/provider/rest_provider.dart';
 import 'evaluation_screen.dart';
 
 class MyServicesScreen extends StatefulWidget {
@@ -14,65 +14,100 @@ class MyServicesScreen extends StatefulWidget {
 }
 
 class _MyServicesScreenState extends State<MyServicesScreen> {
-  final ServicesController _servicesController = ServicesController();
-  late List<ServiceRecord> _services;
-
-  @override
-  void initState() {
-    super.initState();
-  _services = context.read<ServicesController>().userServices;
+  
+  // Função para formatar a data string do Go (provavelmente ISO ou simples)
+  String _formatDate(String dateStr) {
+    try {
+      // Ajuste o parse conforme o formato que seu Go envia. 
+      // Se for ISO 8601 (ex: 2025-11-19T...):
+      final DateTime date = DateTime.parse(dateStr);
+      return DateFormat('dd/MM/yyyy').format(date);
+    } catch (e) {
+      return dateStr; // Retorna original se falhar
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    // Obtém o usuário logado
+    final authService = context.watch<AuthService>();
+    final currentUser = authService.currentUser;
+
+    // Verificação de segurança extra (caso acesse a rota diretamente)
+    if (!authService.isLoggedIn || currentUser == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Meus Serviços')),
+        body: const Center(child: Text('Faça login para ver seus serviços.')),
+      );
+    }
+
+    final List<ServiceDone> services = currentUser.servicesDone;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Meus Serviços'),
       ),
-      body: _services.isEmpty
+      body: services.isEmpty
           ? const Center(
-              child: Text('Você ainda não contatou nenhum profissional.'),
+              child: Text('Você ainda não contratou nenhum serviço.'),
             )
           : ListView.builder(
-              itemCount: _services.length,
+              itemCount: services.length,
               itemBuilder: (context, index) {
-                final service = _services[index];
-                final isCompleted = service.status == ServiceStatus.completed;
+                final service = services[index];
+                final isEvaluated = service.reviewId.isNotEmpty;
 
-                return Card(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: ListTile(
-                    title: Text(service.professional.name),
-                    subtitle: Text(
-                        'Contato em: ${DateFormat('dd/MM/yyyy').format(service.contactDate)}'),
-                    trailing: ElevatedButton(
-                      onPressed: isCompleted
-                          ? null
-                          : () {
-                              // Navega para a tela de avaliação
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => EvaluationScreen(
-                                      professionalName:
-                                          service.professional.name, providerId: service.professional.document,),
-                                ),
-                              ).then((_) {
-                                // Quando voltar da avaliação, marca como concluído
-                                setState(() {
-                                  _servicesController.completeService(service);
-                                });
-                              });
-                            },
-                      child: Text(isCompleted ? 'Avaliado' : 'Avaliar Serviço'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: isCompleted
-                            ? Colors.grey
-                            : Theme.of(context).primaryColor,
+                // Usamos FutureBuilder para buscar o nome do profissional
+                // baseado no providerDocument salvo no histórico
+                return FutureBuilder<Map<String, dynamic>>(
+                  future: context
+                      .read<RestProvider>()
+                      .getProviderBasicInfo(service.providerDocument),
+                  builder: (context, snapshot) {
+                    String providerName = 'Carregando...';
+                    if (snapshot.hasData) {
+                      providerName = snapshot.data?['name'] ?? 'Desconhecido';
+                    }
+
+                    return Card(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          child: Icon(isEvaluated ? Icons.check : Icons.build),
+                          backgroundColor: isEvaluated ? Colors.green : null,
+                          foregroundColor: isEvaluated ? Colors.white : null,
+                        ),
+                        title: Text(providerName),
+                        subtitle: Text(
+                            'Data: ${_formatDate(service.serviceDate)}'),
+                        trailing: ElevatedButton(
+                          onPressed: isEvaluated
+                              ? null // Desabilita se já tem review_id
+                              : () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => EvaluationScreen(
+                                        professionalName: providerName,
+                                        providerId: service.providerDocument,
+                                      ),
+                                    ),
+                                  ).then((_) {
+                                    // Opcional: Recarregar dados do usuário após avaliação
+                                    // para atualizar o status do botão
+                                  });
+                                },
+                          child: Text(isEvaluated ? 'Avaliado' : 'Avaliar'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: isEvaluated
+                                ? Colors.grey
+                                : Theme.of(context).primaryColor,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
+                    );
+                  },
                 );
               },
             ),
