@@ -64,7 +64,6 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // CORREÇÃO: Lê o AuthService do contexto
     final auth = context.watch<AuthService>();
     final userName = auth.currentUser?.name ?? auth.currentProvider?.name ?? 'Usuário';
     final userDocument = auth.currentUser?.document ?? auth.currentProvider?.document ?? 'Não logado';
@@ -120,10 +119,9 @@ class ProfileScreen extends StatelessWidget {
             leading: const Icon(Icons.exit_to_app, color: Colors.red),
             title: const Text('Sair', style: TextStyle(color: Colors.red)),
             onTap: () {
-              // CORREÇÃO: Usa o serviço lido do contexto
               auth.logout();
               Navigator.of(context)
-                  .popUntil((route) => route.isFirst); // Volta para a tela inicial
+                  .popUntil((route) => route.isFirst);
             },
           ),
         ],

@@ -1,14 +1,15 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:helloworld/controller/auth_service.dart';
 import 'package:helloworld/controller/professionals_controller.dart';
 import 'package:helloworld/model/professional_model.dart';
 import 'package:helloworld/view/evaluation_screen.dart';
-import 'package:helloworld/provider/rest_provider.dart'; // <--- Import do RestProvider
+import 'package:helloworld/provider/rest_provider.dart';
 import 'package:url_launcher/url_launcher.dart'; 
-import 'dart:convert'; // Importação essencial para base64Decode
+import 'dart:convert';
 
-// Extensão corrigida para permitir a cópia de todos os campos (necessário para setState)
 extension ProfessionalCopyWith on Professional {
   Professional copyWith({
     String? document,
@@ -50,7 +51,6 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
     _professional = widget.professional;
   }
 
-  // Função helper para verificar o login e mostrar mensagem
   void _handleAction(BuildContext context, VoidCallback onLoggedIn) {
     final authService = context.read<AuthService>();
 
@@ -66,7 +66,24 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
     }
   }
 
-  // Função para Contatar e Salvar no Histórico
+  Uint8List? _decodeBase64(String? base64String) {
+    if (base64String == null || base64String.isEmpty) return null;
+
+    try {
+      String cleanString = base64String;
+      if (base64String.contains(',')) {
+        cleanString = base64String.split(',').last;
+      }
+
+      cleanString = cleanString.replaceAll(RegExp(r'\s+'), '');
+
+      return base64Decode(cleanString);
+    } catch (e) {
+      print('Erro ao decodificar imagem Base64: $e');
+      return null;
+    }
+  }
+
   Future<void> _contactProvider(
       BuildContext context, String url, String contactType) async {
     final authService = context.read<AuthService>();
@@ -74,11 +91,9 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
 
     final Uri uri = Uri.parse(url);
 
-    // 1. Tenta abrir o App externo (WhatsApp ou Telefone)
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
 
-      // 2. Se logado, salva silenciosamente no histórico "Meus Serviços"
       if (authService.isLoggedIn && authService.currentUser != null) {
         try {
           await restProvider.addServiceHistory(
@@ -88,7 +103,6 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
           print("Serviço adicionado ao histórico com sucesso.");
         } catch (e) {
           print("Erro ao salvar histórico: $e");
-          // Opcional: não mostrar erro visual para não interromper o fluxo do usuário
         }
       }
     } else {
@@ -98,7 +112,6 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
     }
   }
 
-  // Função para exibir a foto em tela cheia (modal)
   void _showFullProfilePhoto(BuildContext context) {
     if (_professional.profilePhoto?.isEmpty ?? true) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -137,7 +150,6 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
         },
       );
     } catch (e) {
-      // TRATAMENTO DE ERRO DE FORMATO BASE64 INVÁLIDO
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Erro ao carregar a foto: O formato Base64 é inválido ou incompleto.'),
@@ -179,9 +191,10 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
 
 
   Widget _buildProfilePhoto() {
-    Widget imageWidget;
     const double size = 120;
+    final imageBytes = _decodeBase64(_professional.profilePhoto);
 
+<<<<<<< Updated upstream
     if (_professional.profilePhoto?.isNotEmpty ?? false) {
       try {
         final imageBytes = base64Decode(_professional.profilePhoto ?? '');
@@ -204,11 +217,56 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
     } else {
       // Placeholder se não houver foto
       imageWidget = Icon(Icons.person, size: size, color: Colors.white);
+=======
+    Widget imageWidget;
+    if (imageBytes != null) {
+      imageWidget = ClipOval(
+        child: Image.memory(
+          imageBytes,
+          width: size,
+          height: size,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return Icon(Icons.broken_image, size: size / 2, color: Colors.white);
+          },
+        ),
+      );
+    } else {
+      imageWidget = Icon(Icons.person, size: size / 2, color: Colors.white);
+>>>>>>> Stashed changes
     }
 
     // O GestureDetector permite o clique para ver a foto em tamanho maior
     return GestureDetector(
-      onTap: () => _showFullProfilePhoto(context),
+      onTap: () {
+        if (imageBytes != null) {
+            showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return Dialog(
+                backgroundColor: Colors.black,
+                child: Stack(
+                  children: [
+                    Center(child: Image.memory(imageBytes, fit: BoxFit.contain)),
+                    Positioned(
+                      top: 10,
+                      right: 10,
+                      child: IconButton(
+                        icon: const Icon(Icons.close, color: Colors.white),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Imagem indisponível.')),
+            );
+        }
+      },
       child: CircleAvatar(
         radius: size / 2 + 5,
         backgroundColor: Colors.deepPurple,
@@ -219,12 +277,15 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authService = context.watch<AuthService>();
 
     // Prepara URLs (remove caracteres não numéricos do telefone)
     final cleanPhone = _professional.contactAddress.replaceAll(RegExp(r'[^0-9]'), '');
+<<<<<<< Updated upstream
     final whatsappUrl = "https://wa.me/55$cleanPhone"; // Assumindo +55 Brasil
     final phoneUrl = "tel:$cleanPhone";
+=======
+    final whatsappUrl = "https://wa.me/55$cleanPhone";
+>>>>>>> Stashed changes
 
     return Scaffold(
       appBar: AppBar(
@@ -238,8 +299,6 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
                 if (customer == null) return; 
 
                 final controller = context.read<ProfessionalsController>();
-                final providerId = _professional.document;
-                final customerId = customer.document;
 
                 try {
                   await controller.addFavorite(customer.document, _professional.document);
@@ -272,13 +331,11 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
             Text(_professional.specialty, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 24),
             
-            // Botão de Contato (Agora chama o _contactProvider)
             ElevatedButton.icon(
               icon: const Icon(Icons.phone),
               label: const Text('Contatar (WhatsApp/Tel)'),
               onPressed: () {
                 _handleAction(context, () {
-                  // Exemplo: prioriza WhatsApp, ou você pode criar dois botões separados
                   _contactProvider(context, whatsappUrl, "WhatsApp");
                 });
               },

@@ -1,8 +1,6 @@
-// lib/model/review_model.dart
 import 'dart:convert';
 
 class Review {
-  // Campos que vêm da API /reviews
   final String? id;
   final String title;
   final String description;
@@ -10,7 +8,6 @@ class Review {
   final String customerId;
   final String providerId;
 
-  // Campo ENRIQUECIDO - Preenchido no app após buscar o cliente
   final String? customerName; 
 
   Review({
@@ -20,11 +17,9 @@ class Review {
     required this.rating,
     required this.customerId,
     required this.providerId,
-    this.customerName, // Adicionado como opcional
+    this.customerName,
   });
 
-  // Método 'copyWith' para facilitar a adição do nome do cliente
-  // sem precisar criar um objeto totalmente novo
   Review copyWith({
     String? id,
     String? title,
@@ -45,8 +40,6 @@ class Review {
     );
   }
 
-  // toJson - Usado para ENVIAR uma nova avaliação
-  // Note que 'customerName' não é incluído, pois o backend não o espera
   Map<String, dynamic> toJson() {
     return {
       'id': id ?? '',
@@ -60,8 +53,6 @@ class Review {
 
   String toJsonString() => json.encode(toJson());
 
-  // fromJson - Usado para LER uma avaliação vinda do backend
-  // Note que 'customerName' é nulo aqui, pois a API /reviews não o envia
   factory Review.fromJson(Map<String, dynamic> json) {
     return Review(
       id: json['id'],
@@ -70,7 +61,7 @@ class Review {
       rating: (json['rating'] ?? 0).toInt(),
       customerId: json['customer_id'] ?? '',
       providerId: json['provider_id'] ?? '',
-      customerName: null, // Será preenchido depois pelo controller
+      customerName: null,
     );
   }
 }

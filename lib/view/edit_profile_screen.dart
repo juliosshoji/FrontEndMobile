@@ -365,6 +365,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       keyboardType: TextInputType.datetime,
                     ),
                     const SizedBox(height: 16),
+<<<<<<< Updated upstream
 
                     // Campos específicos para prestadores
                     if (_isProvider) ...[
@@ -439,6 +440,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ],
 
                     // Botão de salvar
+=======
+>>>>>>> Stashed changes
                     ElevatedButton(
                       onPressed: _saveChanges,
                       style: ElevatedButton.styleFrom(

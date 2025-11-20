@@ -16,7 +16,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _documentController = TextEditingController();
-  final _birthDateController = TextEditingController(); // Adicionado
+  final _birthDateController = TextEditingController(); 
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -27,7 +27,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   void dispose() {
     _nameController.dispose();
     _documentController.dispose();
-    _birthDateController.dispose(); // Adicionado
+    _birthDateController.dispose(); 
     _emailController.dispose();
     _phoneController.dispose();
     _passwordController.dispose();
@@ -43,7 +43,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       lastDate: DateTime.now(),
     );
     if (picked != null) {
-      // Formata a data para AAAA-MM-DD para ser compatível com o backend
       String formattedDate = "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
       setState(() {
         _birthDateController.text = formattedDate;

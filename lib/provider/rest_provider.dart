@@ -43,7 +43,6 @@ class RestProvider {
     _document = customerId;
     _userType = 'customer';
     
-    // Endpoint: POST /v1/customers/:document/services
     final uri = Uri.parse("${ApiConstants.customers}/service/$customerId");
     
     final body = json.encode({
@@ -156,7 +155,6 @@ class RestProvider {
     }
   }
 
-  // --- Professional Endpoints ---
 
   Future<void> registerProvider(Professional provider) async {
     final uri = Uri.parse(ApiConstants.providers);
@@ -205,12 +203,9 @@ class RestProvider {
     }
   }
 
-  // <--- NOVO ENDPOINT PARA ATUALIZAR FOTO DE PERFIL
   Future<void> updateProviderProfilePhoto(String document, String base64Photo) async {
-    // Usamos o endpoint PUT /providers/:document para atualizar o perfil
     final uri = Uri.parse("${ApiConstants.providers}/$document");
 
-    // Enviamos o documento e a string Base64 da foto no corpo JSON
     final response = await _client.put(
       uri,
       headers: _headers,
@@ -224,7 +219,6 @@ class RestProvider {
       throw Exception('Falha ao atualizar foto de perfil: ${response.statusCode}');
     }
   }
-  // <--- FIM DO NOVO ENDPOINT
 
 
   Future<void> postReview(Review review) async {

@@ -18,13 +18,11 @@ class ReviewsScreen extends StatefulWidget {
 }
 
 class _ReviewsScreenState extends State<ReviewsScreen> {
-  // REMOVIDO: final ReviewsController _controller = ReviewsController();
   late Future<List<Review>> _reviews;
 
   @override
   void initState() {
     super.initState();
-    // CORREÇÃO: Lê o controller do contexto
     _reviews = context.read<ReviewsController>().fetchReviews(widget.providerId);
   }
 

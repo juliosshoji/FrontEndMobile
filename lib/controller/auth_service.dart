@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:helloworld/model/customer_model.dart';
 import 'package:helloworld/model/professional_model.dart';
 import 'package:helloworld/provider/rest_provider.dart';
-import 'package:crypto/crypto.dart'; // Import crypto
-import 'dart:convert'; // Import convert para utf8
+import 'package:crypto/crypto.dart'; 
+import 'dart:convert';
 
 class AuthService extends ChangeNotifier {
   final RestProvider _api;
@@ -47,7 +47,7 @@ class AuthService extends ChangeNotifier {
       try {
         final updatedCustomer = await _api.getCustomer(_currentUser!.document);
         _currentUser = updatedCustomer;
-        notifyListeners(); // Avisa as telas que os dados mudaram
+        notifyListeners(); 
       } catch (e) {
         print("Erro ao atualizar dados do usuário: $e");
       }
@@ -58,7 +58,6 @@ class AuthService extends ChangeNotifier {
     _currentUser = null;
     _currentProvider = null;
     _isLoggedIn = false;
-    // Nota: Idealmente você também limparia o token no RestProvider
     notifyListeners();
   }
 
