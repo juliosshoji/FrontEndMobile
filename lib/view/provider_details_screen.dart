@@ -83,7 +83,7 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
         try {
           await restProvider.addServiceHistory(
             authService.currentUser!.document,
-            professional.document,
+            _professional.document,
           );
           print("Serviço adicionado ao histórico com sucesso.");
         } catch (e) {
@@ -100,7 +100,7 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
 
   // Função para exibir a foto em tela cheia (modal)
   void _showFullProfilePhoto(BuildContext context) {
-    if (_professional.profilePhoto.isEmpty) {
+    if (_professional.profilePhoto?.isEmpty ?? true) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Este prestador não possui foto de perfil.')),
       );
@@ -108,7 +108,7 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
     }
 
     try {
-      final imageBytes = base64Decode(_professional.profilePhoto);
+      final imageBytes = base64Decode(_professional.profilePhoto ?? '');
       
       showDialog(
         context: context,
@@ -182,9 +182,9 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
     Widget imageWidget;
     const double size = 120;
 
-    if (_professional.profilePhoto.isNotEmpty) {
+    if (_professional.profilePhoto?.isNotEmpty ?? false) {
       try {
-        final imageBytes = base64Decode(_professional.profilePhoto);
+        final imageBytes = base64Decode(_professional.profilePhoto ?? '');
         imageWidget = ClipOval(
           child: Image.memory(
             imageBytes,
@@ -222,7 +222,7 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
     final authService = context.watch<AuthService>();
 
     // Prepara URLs (remove caracteres não numéricos do telefone)
-    final cleanPhone = professional.contactAddress.replaceAll(RegExp(r'[^0-9]'), '');
+    final cleanPhone = _professional.contactAddress.replaceAll(RegExp(r'[^0-9]'), '');
     final whatsappUrl = "https://wa.me/55$cleanPhone"; // Assumindo +55 Brasil
     final phoneUrl = "tel:$cleanPhone";
 
@@ -242,7 +242,7 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
                 final customerId = customer.document;
 
                 try {
-                  await controller.addFavorite(customer.document, professional.document);
+                  await controller.addFavorite(customer.document, _professional.document);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Profissional adicionado aos favoritos!'),
