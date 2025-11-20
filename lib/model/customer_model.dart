@@ -35,7 +35,6 @@ class Customer {
   final String phone;
   final String password;
   final String birthDate;
-  // Nova lista de serviços
   final List<ServiceDone> servicesDone;
 
   Customer({
@@ -73,8 +72,6 @@ class Customer {
       'phone': phone,
       'password': password,
       'birthday': birthDate,
-      // O backend pode ou não esperar esse campo no update, 
-      // mas é bom tê-lo caso precise reenviar
       'services_done': servicesDone.map((s) => s.toJson()).toList(),
     };
   }

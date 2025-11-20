@@ -146,37 +146,6 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
       );
     }
   }
-  
-  // FUNÇÃO DE SIMULAÇÃO CORRIGIDA COM BASE64 VÁLIDO E MAIS LONGO
-  void _simulateUploadAndUpdatePhoto(BuildContext context) async {
-    // String Base64 MAIS LONGA E VÁLIDA (Representa um ícone/imagem simples)
-    // Isso evita o erro de formato ao tentar decodificar uma string muito curta ou inválida.
-    const mockBase64Photo = 'iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHLAAAAABGdBTUEAALGOfPtRkwAAAAlwSFlzAAADsAAAA7AB6mFl+AAAAOklEQVR42u3BAQ0AAADCoftVb+pNB0xOTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk5OTk7O/s4B62WwB0J6yU/HAAAAAElFTkSuQmCC';
-
-    _handleAction(context, () async {
-      try {
-        // Atualiza o estado local para exibir a nova foto imediatamente (simulação)
-        setState(() {
-          _professional = _professional.copyWith(profilePhoto: mockBase64Photo);
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Foto de perfil atualizada com sucesso (simulação)!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erro ao atualizar foto: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    });
-  }
-
 
   Widget _buildProfilePhoto() {
     Widget imageWidget;
@@ -192,21 +161,17 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
             height: size,
             fit: BoxFit.cover,
             errorBuilder: (context, error, stackTrace) {
-              // Fallback se a decodificação funcionar, mas o Flutter não conseguir renderizar a imagem
               return Icon(Icons.person, size: size, color: Colors.white);
             },
           ),
         );
       } catch (_) {
-        // Caso a string Base64 seja inválida
         imageWidget = Icon(Icons.broken_image, size: size, color: Colors.white);
       }
     } else {
-      // Placeholder se não houver foto
       imageWidget = Icon(Icons.person, size: size, color: Colors.white);
     }
 
-    // O GestureDetector permite o clique para ver a foto em tamanho maior
     return GestureDetector(
       onTap: () => _showFullProfilePhoto(context),
       child: CircleAvatar(
@@ -221,9 +186,8 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
   Widget build(BuildContext context) {
     final authService = context.watch<AuthService>();
 
-    // Prepara URLs (remove caracteres não numéricos do telefone)
     final cleanPhone = _professional.contactAddress.replaceAll(RegExp(r'[^0-9]'), '');
-    final whatsappUrl = "https://wa.me/55$cleanPhone"; // Assumindo +55 Brasil
+    final whatsappUrl = "https://wa.me/55$cleanPhone";
     final phoneUrl = "tel:$cleanPhone";
 
     return Scaffold(
@@ -286,18 +250,6 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
                 minimumSize: const Size(double.infinity, 50),
               ),
             ),
-            
-            const SizedBox(height: 16),
-            // Botão de simulação para upload de foto (disponível quando logado)
-            if (authService.isLoggedIn)
-              OutlinedButton.icon(
-                icon: const Icon(Icons.camera_alt_outlined),
-                label: const Text('Simular Upload de Foto'),
-                onPressed: () => _simulateUploadAndUpdatePhoto(context),
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50),
-                ),
-              ),
             const SizedBox(height: 16),
             OutlinedButton.icon(
               icon: const Icon(Icons.rate_review_outlined),
