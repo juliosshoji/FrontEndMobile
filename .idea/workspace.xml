@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="aa87e230-b718-4082-9c35-c543492f40dc" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/controller/auth_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/controller/auth_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/model/customer_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/model/customer_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/provider/rest_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/provider/rest_provider.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/view/initial_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/view/initial_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/view/my_services_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/view/my_services_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/view/provider_details_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/view/provider_details_screen.dart" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="35cpzwAwS6AqaxCrdJhHaaJDyFq" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Flutter.main.dart.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "feature/meus-servicos-screen",
+    "io.flutter.reload.alreadyRun": "true",
+    "show.migrate.to.gradle.popup": "false"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration name="main.dart" type="FlutterRunConfigurationType" factoryName="Flutter">
+      <option name="filePath" value="$PROJECT_DIR$/lib/main.dart" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="aa87e230-b718-4082-9c35-c543492f40dc" name="Changes" comment="" />
+      <created>1763419479231</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1763419479231</updated>
+    </task>
+    <servers />
+  </component>
+</project>

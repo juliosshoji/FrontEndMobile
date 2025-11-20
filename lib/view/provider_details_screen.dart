@@ -4,6 +4,7 @@ import 'package:helloworld/controller/auth_service.dart';
 import 'package:helloworld/controller/professionals_controller.dart';
 import 'package:helloworld/model/professional_model.dart';
 import 'package:helloworld/view/evaluation_screen.dart';
+import 'package:helloworld/provider/rest_provider.dart'; // <--- Import do RestProvider
 import 'package:url_launcher/url_launcher.dart'; 
 import 'dart:convert'; // Importação essencial para base64Decode
 
@@ -61,6 +62,38 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
           content: Text('Você precisa estar logado para realizar esta ação.'),
           backgroundColor: Colors.red,
         ),
+      );
+    }
+  }
+
+  // Função para Contatar e Salvar no Histórico
+  Future<void> _contactProvider(
+      BuildContext context, String url, String contactType) async {
+    final authService = context.read<AuthService>();
+    final restProvider = context.read<RestProvider>();
+
+    final Uri uri = Uri.parse(url);
+
+    // 1. Tenta abrir o App externo (WhatsApp ou Telefone)
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+
+      // 2. Se logado, salva silenciosamente no histórico "Meus Serviços"
+      if (authService.isLoggedIn && authService.currentUser != null) {
+        try {
+          await restProvider.addServiceHistory(
+            authService.currentUser!.document,
+            professional.document,
+          );
+          print("Serviço adicionado ao histórico com sucesso.");
+        } catch (e) {
+          print("Erro ao salvar histórico: $e");
+          // Opcional: não mostrar erro visual para não interromper o fluxo do usuário
+        }
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Não foi possível abrir o $contactType.')),
       );
     }
   }
@@ -188,6 +221,11 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
   Widget build(BuildContext context) {
     final authService = context.watch<AuthService>();
 
+    // Prepara URLs (remove caracteres não numéricos do telefone)
+    final cleanPhone = professional.contactAddress.replaceAll(RegExp(r'[^0-9]'), '');
+    final whatsappUrl = "https://wa.me/55$cleanPhone"; // Assumindo +55 Brasil
+    final phoneUrl = "tel:$cleanPhone";
+
     return Scaffold(
       appBar: AppBar(
         title: Text(_professional.name),
@@ -204,7 +242,7 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
                 final customerId = customer.document;
 
                 try {
-                  await controller.addFavorite(customerId, providerId);
+                  await controller.addFavorite(customer.document, professional.document);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Profissional adicionado aos favoritos!'),
@@ -213,10 +251,7 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
                   );
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Erro ao favoritar: $e'),
-                      backgroundColor: Colors.red,
-                    ),
+                    SnackBar(content: Text('Erro: $e'), backgroundColor: Colors.red),
                   );
                 }
               });
@@ -236,20 +271,22 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
             const SizedBox(height: 8),
             Text(_professional.specialty, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 24),
+            
+            // Botão de Contato (Agora chama o _contactProvider)
             ElevatedButton.icon(
               icon: const Icon(Icons.phone),
-              label: const Text('Contatar'),
+              label: const Text('Contatar (WhatsApp/Tel)'),
               onPressed: () {
                 _handleAction(context, () {
-                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Iniciando contato... (simulação)')),
-                  );
+                  // Exemplo: prioriza WhatsApp, ou você pode criar dois botões separados
+                  _contactProvider(context, whatsappUrl, "WhatsApp");
                 });
               },
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 50),
               ),
             ),
+            
             const SizedBox(height: 16),
             // Botão de simulação para upload de foto (disponível quando logado)
             if (authService.isLoggedIn)
@@ -284,7 +321,6 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
             ),
             const Divider(height: 40),
             Text('Avaliações', style: Theme.of(context).textTheme.titleLarge),
-            // Aqui você pode adicionar a lista de avaliações existentes
           ],
         ),
       ),

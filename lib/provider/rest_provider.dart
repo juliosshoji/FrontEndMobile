@@ -27,6 +27,40 @@ class RestProvider {
   set currentCustomer(Customer customer) {
     _currentCustomer = customer;
   }
+
+  Future<Map<String, dynamic>> getProviderBasicInfo(String document) async {
+    final uri = Uri.parse("${ApiConstants.providers}/$document");
+    final response = await _client.get(uri, headers: _headers);
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      return {'name': 'Profissional não encontrado', 'document': document};
+    }
+  }
+
+  Future<void> addServiceHistory(String customerId, String providerId) async {
+    _document = customerId;
+    _userType = 'customer';
+    
+    // Endpoint: POST /v1/customers/:document/services
+    final uri = Uri.parse("${ApiConstants.customers}/service/$customerId");
+    
+    final body = json.encode({
+      'provider_document': providerId,
+      'service_date': DateTime.now().toIso8601String(),
+    });
+
+    final response = await _client.post(
+        uri, 
+        headers: _headers, 
+        body: body
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Falha ao registrar serviço: ${response.statusCode}');
+    }
+  }
   
   Future<void> login(String document, String passwordHash) async {
     final uri = Uri.parse("${ApiConstants.BASE_URL}/login"); 
