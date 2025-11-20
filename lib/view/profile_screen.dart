@@ -33,14 +33,8 @@ class ProfileScreen extends StatelessWidget {
     if (confirmed != true) return;
 
     try {
-      if (authService.isProvider) {
-        final document = authService.currentProvider!.document;
-        await authService.deleteProvider(document);
-      } else {
         final document = authService.currentUser!.document;
         await authService.deleteCustomer(document);
-      }
-
       if (context.mounted) {
         Navigator.of(context).popUntil((route) => route.isFirst);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -65,8 +59,8 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthService>();
-    final userName = auth.currentUser?.name ?? auth.currentProvider?.name ?? 'Usuário';
-    final userDocument = auth.currentUser?.document ?? auth.currentProvider?.document ?? 'Não logado';
+    final userName = auth.currentUser?.name ?? 'Usuário';
+    final userDocument = auth.currentUser?.document ?? 'Não logado';
 
     return Scaffold(
       appBar: AppBar(

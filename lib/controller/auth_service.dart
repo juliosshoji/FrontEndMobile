@@ -8,17 +8,13 @@ import 'dart:convert';
 class AuthService extends ChangeNotifier {
   final RestProvider _api;
   Customer? _currentUser;
-  Professional? _currentProvider;
   bool _isLoggedIn = false;
 
   AuthService({required RestProvider api}) : _api = api;
 
   Customer? get currentUser => _currentUser;
-  Professional? get currentProvider => _currentProvider;
   bool get isLoggedIn => _isLoggedIn;
-  bool get isProvider => _currentProvider != null;
 
-  // Helper para Hash SHA256
   String _hashPassword(String password) {
     return sha256.convert(utf8.encode(password)).toString();
   }
@@ -56,7 +52,6 @@ class AuthService extends ChangeNotifier {
 
   void logout() {
     _currentUser = null;
-    _currentProvider = null;
     _isLoggedIn = false;
     notifyListeners();
   }
@@ -65,12 +60,6 @@ class AuthService extends ChangeNotifier {
     await _api.updateCustomer(customer);
     _currentUser = customer;
     _api.currentCustomer = customer;
-    notifyListeners();
-  }
-
-  Future<void> updateProvider(Professional provider) async {
-    await _api.updateProvider(provider);
-    _currentProvider = provider;
     notifyListeners();
   }
 
