@@ -4,11 +4,10 @@ import 'package:helloworld/controller/auth_service.dart';
 import 'package:helloworld/controller/professionals_controller.dart';
 import 'package:helloworld/model/professional_model.dart';
 import 'package:helloworld/view/evaluation_screen.dart';
-import 'package:helloworld/provider/rest_provider.dart'; // <--- Import do RestProvider
+import 'package:helloworld/provider/rest_provider.dart'; 
 import 'package:url_launcher/url_launcher.dart'; 
-import 'dart:convert'; // Importação essencial para base64Decode
+import 'dart:convert'; 
 
-// Extensão corrigida para permitir a cópia de todos os campos (necessário para setState)
 extension ProfessionalCopyWith on Professional {
   Professional copyWith({
     String? document,
@@ -50,7 +49,6 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
     _professional = widget.professional;
   }
 
-  // Função helper para verificar o login e mostrar mensagem
   void _handleAction(BuildContext context, VoidCallback onLoggedIn) {
     final authService = context.read<AuthService>();
 
@@ -66,7 +64,6 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
     }
   }
 
-  // Função para Contatar e Salvar no Histórico
   Future<void> _contactProvider(
       BuildContext context, String url, String contactType) async {
     final authService = context.read<AuthService>();
@@ -74,11 +71,9 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
 
     final Uri uri = Uri.parse(url);
 
-    // 1. Tenta abrir o App externo (WhatsApp ou Telefone)
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
 
-      // 2. Se logado, salva silenciosamente no histórico "Meus Serviços"
       if (authService.isLoggedIn && authService.currentUser != null) {
         try {
           await restProvider.addServiceHistory(
@@ -88,7 +83,6 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
           print("Serviço adicionado ao histórico com sucesso.");
         } catch (e) {
           print("Erro ao salvar histórico: $e");
-          // Opcional: não mostrar erro visual para não interromper o fluxo do usuário
         }
       }
     } else {
@@ -98,7 +92,6 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
     }
   }
 
-  // Função para exibir a foto em tela cheia (modal)
   void _showFullProfilePhoto(BuildContext context) {
     if (_professional.profilePhoto?.isEmpty ?? true) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -137,7 +130,6 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
         },
       );
     } catch (e) {
-      // TRATAMENTO DE ERRO DE FORMATO BASE64 INVÁLIDO
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Erro ao carregar a foto: O formato Base64 é inválido ou incompleto.'),
@@ -184,11 +176,9 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authService = context.watch<AuthService>();
 
     final cleanPhone = _professional.contactAddress.replaceAll(RegExp(r'[^0-9]'), '');
     final whatsappUrl = "https://wa.me/55$cleanPhone";
-    final phoneUrl = "tel:$cleanPhone";
 
     return Scaffold(
       appBar: AppBar(
@@ -202,8 +192,6 @@ class _ProviderDetailsScreenState extends State<ProviderDetailsScreen> {
                 if (customer == null) return; 
 
                 final controller = context.read<ProfessionalsController>();
-                final providerId = _professional.document;
-                final customerId = customer.document;
 
                 try {
                   await controller.addFavorite(customer.document, _professional.document);
