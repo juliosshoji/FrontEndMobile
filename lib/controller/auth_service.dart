@@ -38,6 +38,18 @@ class AuthService extends ChangeNotifier {
     }
   }
 
+  Future<void> refreshUser() async {
+    if (_currentUser != null) {
+      try {
+        final updatedCustomer = await _api.getCustomer(_currentUser!.document);
+        _currentUser = updatedCustomer;
+        notifyListeners(); // Avisa as telas que os dados mudaram
+      } catch (e) {
+        print("Erro ao atualizar dados do usuário: $e");
+      }
+    }
+  }
+
   void logout() {
     _currentUser = null;
     _isLoggedIn = false;

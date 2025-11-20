@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:helloworld/controller/auth_service.dart';
 import 'package:helloworld/view/services_session_screen.dart';
+import 'package:provider/provider.dart';
 
 class InitialScreen extends StatefulWidget {
   const InitialScreen({Key? key}) : super(key: key);
@@ -15,8 +16,17 @@ class _InitialScreenState extends State<InitialScreen> {
   final TextEditingController _searchController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    // Adiciona um listener para atualizar a tela sempre que o texto mudar
+    _searchController.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
   void dispose() {
-    _searchController.dispose();
+    _searchController.dispose(); // O listener morre junto com o controller
     super.dispose();
   }
 
@@ -147,9 +157,6 @@ class _InitialScreenState extends State<InitialScreen> {
                 filled: true,
                 fillColor: Colors.white,
               ),
-              onChanged: (value) {
-                setState(() {});
-              },
               onSubmitted: (value) {
                 _performSearch();
               },

@@ -50,6 +50,7 @@ class Customer {
 
   factory Customer.fromJson(Map<String, dynamic> json) {
     var list = json['services_done'] as List<dynamic>? ?? [];
+  
     List<ServiceDone> servicesList =
         list.map((i) => ServiceDone.fromJson(i)).toList();
 

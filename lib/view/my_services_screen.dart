@@ -1,3 +1,4 @@
+// lib/view/my_services_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import "package:intl/intl.dart";
@@ -15,102 +16,117 @@ class MyServicesScreen extends StatefulWidget {
 
 class _MyServicesScreenState extends State<MyServicesScreen> {
   
-  // Função para formatar a data string do Go (provavelmente ISO ou simples)
+  @override
+  void initState() {
+    super.initState();
+    // Assim que a tela carrega, pedimos para atualizar os dados do usuário
+    // usando addPostFrameCallback para evitar erros de build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AuthService>().refreshUser();
+    });
+  }
+
   String _formatDate(String dateStr) {
     try {
-      // Ajuste o parse conforme o formato que seu Go envia. 
-      // Se for ISO 8601 (ex: 2025-11-19T...):
       final DateTime date = DateTime.parse(dateStr);
-      return DateFormat('dd/MM/yyyy').format(date);
+      return DateFormat('dd/MM/yyyy HH:mm').format(date);
     } catch (e) {
-      return dateStr; // Retorna original se falhar
+      return dateStr;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Obtém o usuário logado
-    final authService = context.watch<AuthService>();
-    final currentUser = authService.currentUser;
+    // O Consumer escuta mudanças no AuthService (quando refreshUser terminar)
+    return Consumer<AuthService>(
+      builder: (context, authService, child) {
+        final currentUser = authService.currentUser;
 
-    // Verificação de segurança extra (caso acesse a rota diretamente)
-    if (!authService.isLoggedIn || currentUser == null) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Meus Serviços')),
-        body: const Center(child: Text('Faça login para ver seus serviços.')),
-      );
-    }
+        if (!authService.isLoggedIn || currentUser == null) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('Meus Serviços')),
+            body: const Center(child: Text('Faça login para ver seus serviços.')),
+          );
+        }
 
-    final List<ServiceDone> services = currentUser.servicesDone;
+        final List<ServiceDone> services = currentUser.servicesDone;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Meus Serviços'),
-      ),
-      body: services.isEmpty
-          ? const Center(
-              child: Text('Você ainda não contratou nenhum serviço.'),
-            )
-          : ListView.builder(
-              itemCount: services.length,
-              itemBuilder: (context, index) {
-                final service = services[index];
-                final isEvaluated = service.reviewId.isNotEmpty;
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Meus Serviços'),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.refresh),
+                onPressed: () => authService.refreshUser(), // Botão manual de refresh
+              )
+            ],
+          ),
+          body: services.isEmpty
+              ? const Center(
+                  child: Text('Nenhum serviço encontrado no histórico.'),
+                )
+              : ListView.builder(
+                  itemCount: services.length,
+                  // Usamos reverse para mostrar os mais recentes primeiro, se a lista vier ordenada cronologicamente
+                  itemBuilder: (context, index) {
+                    // Inverte a ordem visual (opcional, remove se quiser ordem original)
+                    final service = services[services.length - 1 - index];
+                    final isEvaluated = service.reviewId.isNotEmpty;
 
-                // Usamos FutureBuilder para buscar o nome do profissional
-                // baseado no providerDocument salvo no histórico
-                return FutureBuilder<Map<String, dynamic>>(
-                  future: context
-                      .read<RestProvider>()
-                      .getProviderBasicInfo(service.providerDocument),
-                  builder: (context, snapshot) {
-                    String providerName = 'Carregando...';
-                    if (snapshot.hasData) {
-                      providerName = snapshot.data?['name'] ?? 'Desconhecido';
-                    }
+                    return FutureBuilder<Map<String, dynamic>>(
+                      future: context
+                          .read<RestProvider>()
+                          .getProviderBasicInfo(service.providerDocument),
+                      builder: (context, snapshot) {
+                        String providerName = 'Carregando...';
+                        if (snapshot.connectionState == ConnectionState.done) {
+                           if (snapshot.hasData) {
+                              providerName = snapshot.data?['name'] ?? 'Prestador';
+                           } else {
+                              providerName = 'Prestador não encontrado';
+                           }
+                        }
 
-                    return Card(
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          child: Icon(isEvaluated ? Icons.check : Icons.build),
-                          backgroundColor: isEvaluated ? Colors.green : null,
-                          foregroundColor: isEvaluated ? Colors.white : null,
-                        ),
-                        title: Text(providerName),
-                        subtitle: Text(
-                            'Data: ${_formatDate(service.serviceDate)}'),
-                        trailing: ElevatedButton(
-                          onPressed: isEvaluated
-                              ? null // Desabilita se já tem review_id
-                              : () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => EvaluationScreen(
-                                        professionalName: providerName,
-                                        providerId: service.providerDocument,
-                                      ),
-                                    ),
-                                  ).then((_) {
-                                    // Opcional: Recarregar dados do usuário após avaliação
-                                    // para atualizar o status do botão
-                                  });
-                                },
-                          child: Text(isEvaluated ? 'Avaliado' : 'Avaliar'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: isEvaluated
-                                ? Colors.grey
-                                : Theme.of(context).primaryColor,
+                        return Card(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: isEvaluated ? Colors.green : Colors.orange,
+                              child: Icon(
+                                isEvaluated ? Icons.check : Icons.history,
+                                color: Colors.white,
+                              ),
+                            ),
+                            title: Text(providerName, style: const TextStyle(fontWeight: FontWeight.bold)),
+                            subtitle: Text('Data: ${_formatDate(service.serviceDate)}'),
+                            trailing: ElevatedButton(
+                              onPressed: isEvaluated
+                                  ? null
+                                  : () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => EvaluationScreen(
+                                            professionalName: providerName,
+                                            providerId: service.providerDocument,
+                                          ),
+                                        ),
+                                      ).then((_) {
+                                        // Atualiza a lista ao voltar da avaliação
+                                        authService.refreshUser();
+                                      });
+                                    },
+                              child: Text(isEvaluated ? 'Avaliado' : 'Avaliar'),
+                            ),
                           ),
-                        ),
-                      ),
+                        );
+                      },
                     );
                   },
-                );
-              },
-            ),
+                ),
+        );
+      },
     );
   }
 }
