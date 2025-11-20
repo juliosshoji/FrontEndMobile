@@ -19,8 +19,6 @@ class _MyServicesScreenState extends State<MyServicesScreen> {
   @override
   void initState() {
     super.initState();
-    // Assim que a tela carrega, pedimos para atualizar os dados do usuário
-    // usando addPostFrameCallback para evitar erros de build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AuthService>().refreshUser();
     });
@@ -37,7 +35,6 @@ class _MyServicesScreenState extends State<MyServicesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // O Consumer escuta mudanças no AuthService (quando refreshUser terminar)
     return Consumer<AuthService>(
       builder: (context, authService, child) {
         final currentUser = authService.currentUser;
@@ -57,7 +54,7 @@ class _MyServicesScreenState extends State<MyServicesScreen> {
             actions: [
               IconButton(
                 icon: const Icon(Icons.refresh),
-                onPressed: () => authService.refreshUser(), // Botão manual de refresh
+                onPressed: () => authService.refreshUser(),
               )
             ],
           ),
@@ -67,9 +64,7 @@ class _MyServicesScreenState extends State<MyServicesScreen> {
                 )
               : ListView.builder(
                   itemCount: services.length,
-                  // Usamos reverse para mostrar os mais recentes primeiro, se a lista vier ordenada cronologicamente
                   itemBuilder: (context, index) {
-                    // Inverte a ordem visual (opcional, remove se quiser ordem original)
                     final service = services[services.length - 1 - index];
                     final isEvaluated = service.reviewId.isNotEmpty;
 
@@ -113,7 +108,6 @@ class _MyServicesScreenState extends State<MyServicesScreen> {
                                           ),
                                         ),
                                       ).then((_) {
-                                        // Atualiza a lista ao voltar da avaliação
                                         authService.refreshUser();
                                       });
                                     },

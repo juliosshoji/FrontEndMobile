@@ -18,7 +18,6 @@ class _InitialScreenState extends State<InitialScreen> {
   @override
   void initState() {
     super.initState();
-    // Adiciona um listener para atualizar a tela sempre que o texto mudar
     _searchController.addListener(() {
       setState(() {});
     });
@@ -26,7 +25,7 @@ class _InitialScreenState extends State<InitialScreen> {
 
   @override
   void dispose() {
-    _searchController.dispose(); // O listener morre junto com o controller
+    _searchController.dispose(); 
     super.dispose();
   }
 

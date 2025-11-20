@@ -16,7 +16,6 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   @override
   void initState() {
     super.initState();
-    // Em um app real, você buscaria apenas os favoritados. Aqui, simulamos.
     _favoriteProfessionals =
         context.read<ProfessionalsController>().fetchFavorites();
   }
@@ -50,9 +49,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 trailing: IconButton(
                   icon: const Icon(Icons.star, color: Colors.amber),
                   onPressed: () {
-                    // Lógica para remover dos favoritos
                     setState(() {
-                      // Simula a remoção da lista
                       snapshot.data!.removeAt(index);
                     });
                   },

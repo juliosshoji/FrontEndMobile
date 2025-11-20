@@ -19,16 +19,12 @@ class EvaluationScreen extends StatefulWidget {
 }
 
 class _EvaluationScreenState extends State<EvaluationScreen> {
-  // REMOVIDO: final RestProvider _api = RestProvider();
-  // REMOVIDO: final AuthService _auth = AuthService();
-
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   int _rating = 0;
   bool _isLoading = false;
 
   Future<void> _submitReview() async {
-    // CORREÇÃO: Lê os serviços do contexto
     final authService = context.read<AuthService>();
     final api = context.read<RestProvider>();
 

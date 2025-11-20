@@ -1,7 +1,5 @@
-// lib/model/professionals_model.dart
 import 'dart:convert';
 
-// Renomeado para 'Professional' para corresponder ao backend
 class Professional {
   final String document;
   final String name;
@@ -26,7 +24,7 @@ class Professional {
       'document': document,
       'name': name,
       'birthday': birthday,
-      'specialty': specialties, // Nome do campo no JSON do backend
+      'specialty': specialties, 
       'contact_type': contactType,
       'contact_address': contactAddress,
       'profile_photo': profilePhoto
@@ -47,9 +45,7 @@ class Professional {
     );
   }
 
-  // Helper para obter a primeira especialidade (para UI)
   String get specialty => specialties.isNotEmpty ? specialties.first : 'N/A';
   
-  // Helper para obter o contato (para UI)
   String get contact => contactAddress;
 }

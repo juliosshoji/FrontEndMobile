@@ -168,7 +168,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       keyboardType: TextInputType.datetime,
                     ),
                     const SizedBox(height: 16),
-                    // Botão de salvar
                     ElevatedButton(
                       onPressed: _saveChanges,
                       style: ElevatedButton.styleFrom(
