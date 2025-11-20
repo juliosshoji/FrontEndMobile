@@ -5,12 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aa87e230-b718-4082-9c35-c543492f40dc" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/controller/auth_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/controller/auth_service.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/model/customer_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/model/customer_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/provider/rest_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/provider/rest_provider.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/view/initial_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/view/initial_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/view/my_services_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/view/my_services_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/model/professional_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/model/professional_model.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/view/provider_details_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/view/provider_details_screen.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -44,7 +39,7 @@
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "feature/meus-servicos-screen",
+    "git-widget-placeholder": "main",
     "io.flutter.reload.alreadyRun": "true",
     "show.migrate.to.gradle.popup": "false"
   }

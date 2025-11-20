@@ -9,6 +9,7 @@ class Professional {
   final List<String> specialties;
   final String contactType;
   final String contactAddress;
+  final String? profilePhoto;
 
   Professional({
     required this.document,
@@ -17,6 +18,7 @@ class Professional {
     required this.specialties,
     required this.contactType,
     required this.contactAddress,
+    this.profilePhoto,
   });
 
   Map<String, dynamic> toJson() {
@@ -27,6 +29,7 @@ class Professional {
       'specialty': specialties, // Nome do campo no JSON do backend
       'contact_type': contactType,
       'contact_address': contactAddress,
+      'profile_photo': profilePhoto
     };
   }
   
@@ -40,6 +43,7 @@ class Professional {
       specialties: json['specialty'] != null ? List<String>.from(json['specialty']) : [],
       contactType: json['contact_type'] ?? '',
       contactAddress: json['contact_address'] ?? '',
+      profilePhoto: json['profile_photo'] ?? '',
     );
   }
 
