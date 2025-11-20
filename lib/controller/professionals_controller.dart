@@ -36,4 +36,12 @@ class ProfessionalsController {
   Future<List<Professional>> fetchFavorites() async {
     return await _api.getFavorites();
   }
+
+  Future<void> updateProvider(Professional provider) async {
+    await _api.updateProvider(provider);
+  }
+
+  Future<void> deleteProvider(String document) async {
+    await _api.deleteProvider(document);
+  }
 }
